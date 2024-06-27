@@ -1,5 +1,16 @@
 services:
+  postgres:
+    image: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - ~/apps/postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=bus
+      - POSTGRES_USER=bus
+      - POSTGRES_DB=BusApp
   basic-server:
+    build: .
     image: kotlin-ktor-starter
     container_name: kotlin-ktor-server
     ports:

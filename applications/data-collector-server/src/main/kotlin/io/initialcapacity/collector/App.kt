@@ -18,7 +18,7 @@ fun Application.module() {
             call.respondText("hi!", ContentType.Text.Html)
         }
     }
-    val scheduler = WorkScheduler<ExampleTask>(ExampleWorkFinder(), mutableListOf(ExampleWorker()), 30)
+    val scheduler = WorkScheduler<ExampleTask>(ExampleWorkFinder(), mutableListOf(ExampleWorker()), 60)
     scheduler.start()
 }
 

@@ -21,11 +21,15 @@ fun Application.module() {
         templateLoader = ClassTemplateLoader(this::class.java.classLoader, "templates")
     }
     install(Routing) {
-        get("/") {
+        get("/test") {
             call.respond(FreeMarkerContent("index.ftl", mapOf("headers" to headers())))
         }
-        staticResources("/static/styles", "static/styles")
-        staticResources("/static/images", "static/images")
+//        staticResources("/static/styles", "static/styles")
+//        staticResources("/static/images", "static/images")
+        staticResources(
+            "/",
+            "static"
+        )
     }
 }
 

@@ -1,6 +1,7 @@
 <#import "template.ftl" as layout />
+<#import "BusDataCard.ftl" as card />
 
-<@layout.noauthentication>
+<!--<@layout.noauthentication>
     <section>
         <div class="container">
             <p>
@@ -8,5 +9,6 @@
             </p>
         </div>
     </section>
-
 </@layout.noauthentication>
+-->
+<@card.DataCard></@card.DataCard>
