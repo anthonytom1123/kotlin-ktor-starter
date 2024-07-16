@@ -8,7 +8,11 @@ enum class Priority {
 
 @Serializable
 data class Task(
-    val name: String,
-    val description: String,
-    val priority:Priority
+    val lineRef: String,
+    val lineName: String,
+    val stopRef: Int,
+    val stopName: String,
+    val directionRef: String,
+    val occupancy: String,
+    val arrivalTime: String
 )

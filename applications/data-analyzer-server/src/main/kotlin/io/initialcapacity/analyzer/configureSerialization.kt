@@ -8,8 +8,12 @@ import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.util.reflect.*
+import org.slf4j.LoggerFactory
 
 fun Application.configureSerialization(repository: TaskRepository) {
+    val logger = LoggerFactory.getLogger(this.javaClass)
+
     install(ContentNegotiation) {
         json()
     }
@@ -20,42 +24,73 @@ fun Application.configureSerialization(repository: TaskRepository) {
                 call.respond(tasks)
             }
 
-            get("/byName/{taskName}") {
+            get("/byLineRef/{lineRef}") {
+                logger.info("get /tasks/byLineRef received")
+                val ref = call.parameters["lineRef"]
+                if (ref == null) {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@get
+                }
+                val task = repository.getTaskByLineRef(ref)
+                if (task.isEmpty()) {
+                    logger.info("get/byLineRef/: [$ref] was not found.")
+                    call.respond(HttpStatusCode.NotFound)
+                    return@get
+                }
+                call.respond(HttpStatusCode.OK, task)
+            }
+
+            get("/byLineName/{taskName}") {
+                logger.info("get /tasks/byLineName received")
                 val name = call.parameters["taskName"]
                 if (name == null) {
                     call.respond(HttpStatusCode.BadRequest)
                     return@get
                 }
-                val task = repository.getTaskByName(name)
-                if (task == null) {
+                val task = repository.getTaskByLineName(name)
+                if (task.isEmpty()) {
+                    logger.info("get/byLineName/: [$name] was not found.")
                     call.respond(HttpStatusCode.NotFound)
                     return@get
                 }
-                call.respond(task)
+                call.respond(HttpStatusCode.OK, task)
             }
 
-            get("/byPriority/{priority}") {
-                val priorityAsText = call.parameters["priority"]
-                if (priorityAsText == null) {
+            get("/byStopRef/{stopRef}") {
+                logger.info("get /tasks/byStopRef received")
+                val ref = call.parameters["stopRef"]
+                if (ref == null) {
                     call.respond(HttpStatusCode.BadRequest)
                     return@get
                 }
-                try {
-                    val priority = Priority.valueOf(priorityAsText)
-                    val tasks = repository.getTasksByPriority(priority)
-
-                    if (tasks.isEmpty()) {
-                        call.respond(HttpStatusCode.NotFound)
-                        return@get
-                    }
-                    call.respond(tasks)
-                } catch (ex: IllegalArgumentException) {
-                    call.respond(HttpStatusCode.BadRequest)
+                val task = repository.getTaskByStopRef(ref.toInt())
+                if (task.isEmpty()) {
+                    logger.info("get/byStopRef/: [$ref] was not found.")
+                    call.respond(HttpStatusCode.NotFound)
+                    return@get
                 }
+                call.respond(HttpStatusCode.OK, task)
+            }
+
+            get("/byStopName/{stopName}") {
+                logger.info("get /tasks/byStopName received")
+                val name = call.parameters["stopName"]
+                if (name == null) {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@get
+                }
+                val task = repository.getTaskByStopName(name)
+                if (task.isEmpty()) {
+                    logger.info("get/byStopName/: [$name] was not found.")
+                    call.respond(HttpStatusCode.NotFound)
+                    return@get
+                }
+                call.respond(HttpStatusCode.OK, task)
             }
 
             post {
                 try {
+                    logger.info("post received")
                     val task = call.receive<Task>()
                     repository.addTask(task)
                     call.respond(HttpStatusCode.NoContent)
@@ -66,21 +101,35 @@ fun Application.configureSerialization(repository: TaskRepository) {
                 }
             }
 
-            delete("/{taskName}") {
-                val name = call.parameters["taskName"]
-                if (name == null) {
+            post("/list") {
+                try {
+                    logger.info("post/list received")
+                    val taskList = call.receive<MutableList<Task>>()
+                    taskList.forEach {
+                        repository.addTask(it)
+                    }
+                    call.respond(HttpStatusCode.NoContent)
+                } catch (ex: IllegalStateException) {
+                    call.respond(HttpStatusCode.BadRequest)
+                } catch (ex: JsonConvertException) {
+                    call.respond(HttpStatusCode.BadRequest)
+                }
+            }
+
+            delete("/delete?{stopRef}&{lineRef}&{directionRef}&{arrivalTime}") {
+                val stopRef = call.parameters["stopRef"]
+                val lineRef: Int? = call.parameters["lineRef"]?.toInt()
+                val directionRef = call.parameters["directionRef"]
+                val arrivalTime = call.parameters["arrivalTime"]
+                if (stopRef == null || lineRef == null || directionRef == null || arrivalTime == null) {
                     call.respond(HttpStatusCode.BadRequest)
                     return@delete
                 }
-                if (repository.removeTask(name)) {
+                if (repository.removeTask(stopRef, lineRef, directionRef, arrivalTime)) {
                     call.respond(HttpStatusCode.NoContent)
                 } else {
                     call.respond(HttpStatusCode.NotFound)
                 }
-            }
-
-            delete("/de") {
-                call.respond(HttpStatusCode.BadRequest)
             }
         }
     }

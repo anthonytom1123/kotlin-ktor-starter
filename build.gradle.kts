@@ -1,6 +1,7 @@
 plugins {
     kotlin("jvm") version "1.9.22"
     id("org.jetbrains.kotlin.plugin.serialization") version "1.9.22" apply false
+    id("com.google.protobuf") version "0.9.4" apply false
 }
 
 subprojects {

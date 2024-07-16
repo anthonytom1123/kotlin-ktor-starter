@@ -17,7 +17,7 @@ dependencies {
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktorVersion")
 }
 
-task<JavaExec>("run") {
+task<JavaExec>("start") {
     classpath = files(tasks.jar)
 }
 

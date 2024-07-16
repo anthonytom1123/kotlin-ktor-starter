@@ -1,34 +1,53 @@
 package io.initialcapacity.analyzer
 
+import org.slf4j.LoggerFactory
+
 class FakeTaskRepository: TaskRepository {
+    private val logger = LoggerFactory.getLogger(this.javaClass)
     private val tasks = mutableListOf(
-        Task("cleaning", "Clean the house", Priority.Low),
-        Task("gardening", "Mow the lawn", Priority.Medium),
-        Task("shopping", "Buy the groceries", Priority.High),
-        Task("painting", "Paint the fence", Priority.Medium)
+        Task("250", "Line 250", 12345, "Test Stop #1", "OB", "seatsAvailable", "2024-07-02T05:21:52Z"),
+        Task("251", "Line 251", 54321, "Test Stop #2", "IB", "standingAvailable", "2024-07-02T05:22:54Z")
     )
 
     override suspend fun getAllTasks(): List<Task> = tasks
 
-    override suspend fun getTasksByPriority(priority: Priority): List<Task> {
+    override suspend fun getTaskByLineRef(ref: String): List<Task> {
         return tasks.filter {
-            it.priority == priority
+            it.lineRef == ref
         }
     }
 
-    override suspend fun getTaskByName(name: String) = tasks.find {
-        it.name.equals(name, ignoreCase = true)
+    override suspend fun getTaskByLineName(name: String): List<Task> {
+        logger.info("FakeTaskRepository.getTaskByLineName: $tasks")
+        return tasks.filter {
+            logger.info("FakeTaskRepository.getTaskByLineName: ${it.lineName} == $name is ${it.lineName == name}")
+            it.lineName == name
+        }
+    }
+
+    override suspend fun getTaskByStopRef(ref: Int): List<Task> {
+        return tasks.filter {
+            it.stopRef == ref
+        }
+    }
+
+    override suspend fun getTaskByStopName(name: String): List<Task> {
+        return tasks.filter {
+            it.stopName == name
+        }
     }
 
     override suspend fun addTask(task: Task) {
-        if (getTaskByName(task.name) != null) {
-            throw IllegalStateException("Cannot duplicate task names!")
-        }
         tasks.add(task)
     }
 
-    override suspend fun removeTask(name: String): Boolean {
-        return tasks.removeIf { it.name == name }
+    override suspend fun removeTask(lineRef: String, stopRef: Int, directionRef: String, arrivalTime: String): Boolean {
+        return tasks.removeIf {
+            it.lineRef == lineRef &&
+            it.stopRef == stopRef &&
+            it.directionRef == directionRef
+            it.arrivalTime == arrivalTime
+        }
     }
 
 }

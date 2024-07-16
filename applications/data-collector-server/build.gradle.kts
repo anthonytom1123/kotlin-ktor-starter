@@ -8,6 +8,7 @@ val ktorVersion: String by project
 
 dependencies {
     implementation(project(":components:data-collector"))
+    implementation(project(":components:data-analyzer"))
     implementation(project(":support:workflow-support"))
 
     implementation("io.ktor:ktor-server-core-jvm:$ktorVersion")
@@ -17,7 +18,7 @@ dependencies {
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktorVersion")
 }
 
-task<JavaExec>("run") {
+task<JavaExec>("start") {
     classpath = files(tasks.jar)
 }
 
