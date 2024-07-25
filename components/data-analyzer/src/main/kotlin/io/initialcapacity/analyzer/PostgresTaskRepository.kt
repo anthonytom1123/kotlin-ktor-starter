@@ -24,20 +24,6 @@ class PostgresTaskRepository : TaskRepository {
         TaskDAO.find { (TaskTable.stopName eq name) }.map(::daoToModel)
     }
 
-//    override suspend fun getTasksByPriority(priority: Priority): List<Task> = suspendTransaction {
-//        TaskDAO
-//            .find { (TaskTable.priority eq priority.toString()) }
-//            .map(::daoToModel)
-//    }
-//
-//    override suspend fun getTaskByName(name: String): Task? = suspendTransaction {
-//        TaskDAO
-//            .find { (TaskTable.name eq name) }
-//            .limit(1)
-//            .map(::daoToModel)
-//            .firstOrNull()
-//    }
-
     override suspend fun addTask(task: Task): Unit = suspendTransaction {
         TaskDAO.new {
             lineRef = task.lineRef

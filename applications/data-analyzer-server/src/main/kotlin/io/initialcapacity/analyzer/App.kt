@@ -32,6 +32,6 @@ fun Application.module() {
 
 fun main() {
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
-    val port = System.getenv("PORT")?.toInt() ?: 8889
+    val port = System.getenv("PORT")?.toInt() ?: 8887
     embeddedServer(Netty, port = port, host = "0.0.0.0", module = { module() }).start(wait = true)
 }

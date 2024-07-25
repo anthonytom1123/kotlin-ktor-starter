@@ -94,6 +94,7 @@ class ApplicationTest {
         client.close()
     }
 
+    @Test
     fun testGetTasksByStopRef() = testApplication {
         application {
             val repository = FakeTaskRepository()
@@ -120,6 +121,7 @@ class ApplicationTest {
         client.close()
     }
 
+    @Test
     fun testGetTasksByStopName() = testApplication {
         application {
             val repository = FakeTaskRepository()
@@ -133,7 +135,7 @@ class ApplicationTest {
             }
         }
 
-        val response = client.get("/tasks/byStopName/Test Stop #1") {
+        val response = client.get("/tasks/byStopName/Test Stop 1") {
             accept(ContentType.Application.Json)
         }
         val results = response.body<List<Task>>()
@@ -167,38 +169,70 @@ class ApplicationTest {
         assertEquals(HttpStatusCode.NotFound, response.status)
     }
 
-//    @Test
-//    fun newTasksCanBeAdded() = testApplication {
-//        application {
-//            module()
-//        }
-//
-//        val client = createClient {
-//            install(ContentNegotiation) {
-//                json()
-//            }
-//        }
-//
-//        val task = Task("swimming", "Go to the beach", Priority.Low)
-//        val response1 = client.post("/tasks") {
-//            header(
-//                HttpHeaders.ContentType,
-//                ContentType.Application.Json
-//            )
-//
-//            setBody(task)
-//        }
-//        assertEquals(HttpStatusCode.NoContent, response1.status)
-//
-//        val response2 = client.get("/tasks")
-//        assertEquals(HttpStatusCode.OK, response2.status)
-//
-//        val taskNames = response2
-//            .body<List<Task>>()
-//            .map { it.name }
-//
-//        assertContains(taskNames, "swimming")
-//    }
+    @Test
+    fun testPostgresAddingTasks() = testApplication {
+        application {
+            module()
+        }
+
+        val client = createClient {
+            install(ContentNegotiation) {
+                json()
+            }
+        }
+
+        val task = Task(
+            "252",
+            "Line 252",
+            99999,
+            "Test Stop 3",
+            "IB",
+            "seatsAvailable",
+            "2024-07-02T05:21:58Z"
+        )
+        val response1 = client.post("/tasks/single") {
+            header(
+                HttpHeaders.ContentType,
+                ContentType.Application.Json
+            )
+            setBody(task)
+        }
+        assertEquals(HttpStatusCode.NoContent, response1.status)
+
+        val response2 = client.get("/tasks")
+        assertEquals(HttpStatusCode.OK, response2.status)
+
+        val taskNames = response2
+            .body<List<Task>>()
+            .map { it.lineName }
+
+        assertContains(taskNames, "Line 252")
+        client.close()
+    }
+
+    @Test
+    fun testPostgresGetAllTasks() = testApplication {
+        application {
+            module()
+        }
+
+        val client = createClient {
+            install(ContentNegotiation) {
+                json()
+            }
+        }
+
+        val response = client.get("/tasks") {
+            accept(ContentType.Application.Json)
+        }
+        val results = response.body<List<Task>>()
+
+        assertEquals(HttpStatusCode.OK, response.status)
+
+        val actualLineRef = results.map(Task::lineRef)
+        assertContains(actualLineRef, "252")
+        client.close()
+    }
 
     //@Test
 //    fun tasksCanBeDeleted() = testApplication {

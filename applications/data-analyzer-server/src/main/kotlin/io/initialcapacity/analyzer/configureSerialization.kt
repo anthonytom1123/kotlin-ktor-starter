@@ -90,9 +90,11 @@ fun Application.configureSerialization(repository: TaskRepository) {
 
             post {
                 try {
-                    logger.info("post received")
-                    val task = call.receive<Task>()
-                    repository.addTask(task)
+                    logger.info("post/list received")
+                    val taskList = call.receive<MutableList<Task>>()
+                    taskList.forEach {
+                        repository.addTask(it)
+                    }
                     call.respond(HttpStatusCode.NoContent)
                 } catch (ex: IllegalStateException) {
                     call.respond(HttpStatusCode.BadRequest)
@@ -101,13 +103,11 @@ fun Application.configureSerialization(repository: TaskRepository) {
                 }
             }
 
-            post("/list") {
+            post("/single") {
                 try {
-                    logger.info("post/list received")
-                    val taskList = call.receive<MutableList<Task>>()
-                    taskList.forEach {
-                        repository.addTask(it)
-                    }
+                    logger.info("post received")
+                    val task = call.receive<Task>()
+                    repository.addTask(task)
                     call.respond(HttpStatusCode.NoContent)
                 } catch (ex: IllegalStateException) {
                     call.respond(HttpStatusCode.BadRequest)

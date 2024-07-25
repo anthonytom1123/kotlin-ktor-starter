@@ -5,8 +5,8 @@ import org.slf4j.LoggerFactory
 class FakeTaskRepository: TaskRepository {
     private val logger = LoggerFactory.getLogger(this.javaClass)
     private val tasks = mutableListOf(
-        Task("250", "Line 250", 12345, "Test Stop #1", "OB", "seatsAvailable", "2024-07-02T05:21:52Z"),
-        Task("251", "Line 251", 54321, "Test Stop #2", "IB", "standingAvailable", "2024-07-02T05:22:54Z")
+        Task("250", "Line 250", 12345, "Test Stop 1", "OB", "seatsAvailable", "2024-07-02T05:21:52Z"),
+        Task("251", "Line 251", 54321, "Test Stop 2", "IB", "standingAvailable", "2024-07-02T05:22:54Z")
     )
 
     override suspend fun getAllTasks(): List<Task> = tasks

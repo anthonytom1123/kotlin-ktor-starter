@@ -19,6 +19,7 @@ import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
+import javax.print.attribute.standard.Compression
 
 
 class ExampleWorker(override val name: String = "data-collector") : Worker<ExampleTask> {
@@ -61,7 +62,7 @@ class ExampleWorker(override val name: String = "data-collector") : Worker<Examp
 //                logger.info("Header $name: ${response.headers.get(name)}")
 //            }
             return@runBlocking response.body()
-    }
+        }
 
     private fun processBody(body: ByteArray): MutableList<Task> {
         //substring to remove BOM
@@ -88,22 +89,18 @@ class ExampleWorker(override val name: String = "data-collector") : Worker<Examp
 
     private fun sendToAnalyser(taskList: MutableList<Task>) =
         runBlocking {
-            logger.info("sending list")
+            val url: String = System.getenv("ANALYZER_URL")
             val response: HttpResponse = HttpClient(CIO) {
                 install(ContentNegotiation) {
                     json()
                 }
             }.use { client ->
-                client.post("http://127.0.0.1:8889/tasks/list") {
+                logger.info("Attempting to connect to $url")
+                client.post(url) {
                     contentType(ContentType.Application.Json)
                     setBody(Json.encodeToString(taskList))
                 }
             }
-
-//            response.request.headers.names().forEach { name ->
-//                logger.info("Analyser Request Header - $name: ${response.request.headers[name]}")
-//            }
-//            logger.info("Analyser Status: ${response.status}")
             return@runBlocking response
         }
 }

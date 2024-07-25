@@ -9,9 +9,11 @@ RUN $JAVA_HOME/bin/jlink \
  --output /javaruntime
 
 FROM alpine
+
 COPY --from=jre-build /javaruntime $JAVA_HOME
 ENV JAVA_HOME=/opt/java/openjdk
 ENV PATH "${JAVA_HOME}/bin:${PATH}"
+
 ENV PORT=8888
 ENV APP="/opt/applications/basic-server.jar"
 
