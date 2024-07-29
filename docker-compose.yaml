@@ -10,6 +10,7 @@ services:
       - POSTGRES_PASSWORD=bus
       - POSTGRES_USER=bus
       - POSTGRES_DB=busdb
+      - ANALYZER_URL: http://data-analyzer:8887/tasks
     expose:
       - 5432
     networks:
@@ -53,7 +54,6 @@ services:
       PORT: 8886
       APP: /opt/applications/data-collector-server.jar
       ANALYZER_URL: http://data-analyzer:8887/tasks
-      TransitToken: ea43df0e-f500-4422-83a5-f00910b6b2d5
     expose:
       - 8886
     networks:
