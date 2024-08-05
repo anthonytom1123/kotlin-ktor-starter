@@ -14,5 +14,5 @@ data class Task(
     val stopName: String,
     val directionRef: String,
     val occupancy: String,
-    val arrivalTime: String
+    var arrivalTime: String
 )

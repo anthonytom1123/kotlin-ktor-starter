@@ -50,4 +50,12 @@ class FakeTaskRepository: TaskRepository {
         }
     }
 
+    override suspend fun clearTasks(): Int {
+        if(tasks.removeAll(tasks)) {
+            return 1
+        }
+        return 0
+
+    }
+
 }

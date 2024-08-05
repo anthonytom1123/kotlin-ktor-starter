@@ -7,10 +7,9 @@ services:
     volumes:
       - ./sql:/docker-entrypoint-initdb.d
     environment:
-      - POSTGRES_PASSWORD=bus
-      - POSTGRES_USER=bus
-      - POSTGRES_DB=busdb
-      - ANALYZER_URL: http://data-analyzer:8887/tasks
+      POSTGRES_PASSWORD: bus
+      POSTGRES_USER: bus
+      POSTGRES_DB: busdb
     expose:
       - 5432
     networks:
@@ -24,6 +23,7 @@ services:
     environment:
       PORT: 8888
       APP: /opt/applications/basic-server.jar
+      ANALYZER_URL: http://data-analyzer:8887/tasks
     expose:
       - 8888
     networks:
@@ -54,6 +54,7 @@ services:
       PORT: 8886
       APP: /opt/applications/data-collector-server.jar
       ANALYZER_URL: http://data-analyzer:8887/tasks
+      TransitToken: ${TRANSIT_TOKEN}
     expose:
       - 8886
     networks:

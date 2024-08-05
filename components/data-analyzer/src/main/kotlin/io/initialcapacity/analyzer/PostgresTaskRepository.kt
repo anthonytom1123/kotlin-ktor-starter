@@ -2,6 +2,7 @@ package io.initialcapacity.analyzer
 
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.deleteAll
 
 class PostgresTaskRepository : TaskRepository {
     override suspend fun getAllTasks(): List<Task> = suspendTransaction {
@@ -44,5 +45,9 @@ class PostgresTaskRepository : TaskRepository {
             TaskTable.arrivalTime eq arrivalTime
         }
         rowsDeleted == 1
+    }
+
+    override suspend fun clearTasks(): Int = suspendTransaction {
+        TaskTable.deleteAll()
     }
 }

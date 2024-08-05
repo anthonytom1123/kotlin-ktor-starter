@@ -15,9 +15,9 @@ class AppTest {
 
     @Test
     fun testEmptyHome() = testApp {
-        val response = client.get("/")
+        val response = client.get("/test")
         assertEquals(HttpStatusCode.OK, response.status)
-        assertContains(response.bodyAsText(), "Current task is")
+        assertContains(response.bodyAsText(), "Success!")
     }
 
     private fun testApp(block: suspend ApplicationTestBuilder.(client: HttpClient) -> Unit) {

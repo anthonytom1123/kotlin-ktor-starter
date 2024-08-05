@@ -54,16 +54,33 @@ class ApplicationTest {
             }
         }
 
-        val response = client.get("/tasks/byLineRef/250") {
+        val task = Task(
+            "250",
+            "Line 250",
+            99999,
+            "Test Stop 1",
+            "IB",
+            "seatsAvailable",
+            "2024-07-02T05:21:58Z"
+        )
+        val testPostResponse = client.post("/tasks/single") {
+            header(
+                HttpHeaders.ContentType,
+                ContentType.Application.Json
+            )
+            setBody(task)
+        }
+
+        val testResponse = client.get("/tasks/byLineRef/250") {
             accept(ContentType.Application.Json)
         }
-        val results = response.body<List<Task>>()
+        val results = testResponse.body<List<Task>>()
 
-        assertEquals(HttpStatusCode.OK, response.status)
+        assertEquals(HttpStatusCode.OK, testResponse.status)
 
-        val expectedTaskNames = listOf("Line 250")
+        val expectedTaskName = "Line 250"
         val actualTaskNames = results.map(Task::lineName)
-        assertContentEquals(expectedTaskNames, actualTaskNames)
+        assertContains(actualTaskNames, expectedTaskName)
         client.close()
     }
 

@@ -1,6 +1,10 @@
 function displayAllTasks() {
     clearTasksTable();
-    fetchAllTasks().then(displayTasks)
+    fetchAllTasks().then(tasks => displayTasks(tasks))
+}
+
+function getAnalyzerUrl() {
+    return "http://127.0.0.1:8887"
 }
 
 function displayTasksWithPriority() {
@@ -9,7 +13,17 @@ function displayTasksWithPriority() {
     fetchTasksWithPriority(priority).then(displayTasks)
 }
 
+function displayTasks(tasks) {
+    console.log("displayTask Name")
+    const tasksTableBody = tasksTable()
+    tasks.forEach(task => {
+        const newRow = taskRow(task);
+        tasksTableBody.appendChild(newRow);
+    });
+}
+
 function displayTask(name) {
+    console.log("displayTask Name")
     fetchTaskWithName(name).then(t =>
         taskDisplay().innerHTML
             = `${t.priority} priority task ${t.name} with description "${t.description}"`
@@ -53,11 +67,11 @@ function readTaskPriority() {
 }
 
 function fetchTasksWithPriority(priority) {
-    return sendGET(`/tasks/byPriority/${priority}`);
+    return sendGET("/byPriority/${priority}");
 }
 
 function fetchTaskWithName(name) {
-    return sendGET(`/tasks/byName/${name}`);
+    return sendGET("/byName/${name}");
 }
 
 function fetchAllTasks() {
@@ -66,18 +80,20 @@ function fetchAllTasks() {
 
 function sendGET(url) {
     return fetch(
-        "http://127.0.0.1:8889" + url,
+        getAnalyzerUrl() + url,
         {headers: {'Accept': 'application/json'}}
     ).then(response => {
         if (response.ok) {
+            console.log("GET "+ getAnalyzerUrl() + url +" response is ok")
             return response.json()
         }
+        console.log("GET "+ getAnalyzerUrl() + url +"  response is not ok")
         return [];
     });
 }
 
 function sendPOST(url, data) {
-    return fetch("http://127.0.0.1:8889" + url, {
+    return fetch(getAnalyzerUrl + url, {
         method: 'POST',
         headers: {
             'Access-Control-Allow-Origin': '*',
@@ -88,7 +104,7 @@ function sendPOST(url, data) {
 }
 
 function sendDELETE(url) {
-    return fetch("http://127.0.0.1:8889" + url, {
+    return fetch(getAnalyzerUrl + url, {
         method: "DELETE"
     });
 }
@@ -105,18 +121,14 @@ function clearTaskDisplay() {
     taskDisplay().innerText = "None";
 }
 
-function displayTasks(tasks) {
-    const tasksTableBody = tasksTable()
-    tasks.forEach(task => {
-        const newRow = taskRow(task);
-        tasksTableBody.appendChild(newRow);
-    });
-}
-
 function taskRow(task) {
     return tr([
-        td(task.name),
-        td(task.priority),
+        td(task.lineRef),
+        td(task.lineName),
+        td(task.stopName),
+        td(task.directionRef),
+        td(task.occupancy),
+        td(task.arrivalTime),
         td(viewLink(task.name)),
         td(deleteLink(task.name)),
     ]);

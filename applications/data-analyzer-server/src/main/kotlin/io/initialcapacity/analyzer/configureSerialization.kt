@@ -9,7 +9,13 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.util.reflect.*
+import org.slf4j.Logger
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.time.ZoneId
+import java.time.LocalDateTime
 import org.slf4j.LoggerFactory
+import java.time.Duration
 
 fun Application.configureSerialization(repository: TaskRepository) {
     val logger = LoggerFactory.getLogger(this.javaClass)
@@ -20,7 +26,9 @@ fun Application.configureSerialization(repository: TaskRepository) {
     routing {
         route("/tasks") {
             get {
-                val tasks = repository.getAllTasks()
+                logger.info("get /tasks received")
+                var tasks = repository.getAllTasks()
+                tasks = calculateRemainingTime(tasks, logger)
                 call.respond(tasks)
             }
 
@@ -91,7 +99,9 @@ fun Application.configureSerialization(repository: TaskRepository) {
             post {
                 try {
                     logger.info("post/list received")
-                    val taskList = call.receive<MutableList<Task>>()
+                    logger.info("clearing table")
+                    repository.clearTasks()
+                    var taskList = call.receive<MutableList<Task>>()
                     taskList.forEach {
                         repository.addTask(it)
                     }
@@ -133,4 +143,30 @@ fun Application.configureSerialization(repository: TaskRepository) {
             }
         }
     }
+}
+
+private fun calculateRemainingTime(task: Task): Task {
+    val formatter = DateTimeFormatter.ISO_DATE_TIME
+    val currentTime = getCurrentTime()
+    val duration = Duration.between(currentTime, LocalDateTime.parse(task.arrivalTime, formatter))
+    task.arrivalTime = duration.toMinutes().toString()
+    return task
+}
+
+private fun calculateRemainingTime(taskList: List<Task>, logger: Logger): List<Task> {
+    try {
+        logger.info("calculating remaining time")
+        taskList.map { task ->
+            calculateRemainingTime(task)
+        }
+    } catch (e: Exception) {
+        logger.error("Found error: $e")
+    }
+    logger.info("remaining times calculated: ${taskList.size}")
+    return taskList
+}
+
+private fun getCurrentTime(): LocalDateTime {
+    val zoneId = ZoneId.of("America/Los_Angeles")
+    return ZonedDateTime.now(zoneId).toLocalDateTime()
 }

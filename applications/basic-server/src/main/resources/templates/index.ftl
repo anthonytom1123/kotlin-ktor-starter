@@ -1,5 +1,6 @@
 <#import "template.ftl" as layout />
 <#import "BusDataCard.ftl" as card />
+<#import "LandingPage.ftl" as landingPage/>
 
 <!--<@layout.noauthentication>
     <section>
@@ -11,4 +12,6 @@
     </section>
 </@layout.noauthentication>
 -->
-<@card.DataCard></@card.DataCard>
+<html>
+    <@landingPage.LandingPage/>
+</html>
