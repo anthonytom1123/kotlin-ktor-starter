@@ -2,7 +2,7 @@
 <#macro LandingPage busDataList title="LandingPage">
 <head>
     <title>When's the Bus?</title>
-    <link rel="stylesheet" type="text/css" href="/static/styles/indexStyle.css">
+    <link rel="stylesheet" type="text/css" href="/static/styles/landingPageStyle.css">
     <script src="/javascript/filterBusData.js" type="application/javascript"></script>
 </head>
 <body>
