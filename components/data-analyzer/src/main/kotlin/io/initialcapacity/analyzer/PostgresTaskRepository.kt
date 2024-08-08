@@ -27,13 +27,13 @@ class PostgresTaskRepository : TaskRepository {
 
     override suspend fun addTask(task: Task): Unit = suspendTransaction {
         TaskDAO.new {
-            lineRef = task.lineRef
-            lineName = task.lineName
+            lineRef = task.lineRef.removeSurrounding("\"","\"")
+            lineName = task.lineName.removeSurrounding("\"","\"")
             stopRef = task.stopRef
-            stopName = task.stopName
-            directionRef = task.directionRef
-            occupancy = task.occupancy
-            arrivalTime = task.arrivalTime
+            stopName = task.stopName.removeSurrounding("\"","\"")
+            directionRef = task.directionRef.removeSurrounding("\"","\"")
+            occupancy = task.occupancy.removeSurrounding("\"","\"")
+            arrivalTime = task.arrivalTime.removeSurrounding("\"","\"")
         }
     }
 

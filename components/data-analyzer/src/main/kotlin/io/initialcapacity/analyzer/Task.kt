@@ -2,9 +2,6 @@ package io.initialcapacity.analyzer
 
 import kotlinx.serialization.Serializable
 
-enum class Priority {
-    Low, Medium, High, Vital
-}
 
 @Serializable
 data class Task(

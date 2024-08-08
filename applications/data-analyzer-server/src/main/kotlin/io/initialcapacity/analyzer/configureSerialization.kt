@@ -148,7 +148,7 @@ fun Application.configureSerialization(repository: TaskRepository) {
 private fun calculateRemainingTime(task: Task): Task {
     val formatter = DateTimeFormatter.ISO_DATE_TIME
     val currentTime = getCurrentTime()
-    val duration = Duration.between(currentTime, LocalDateTime.parse(task.arrivalTime, formatter))
+    val duration = Duration.between(currentTime, LocalDateTime.parse(task.arrivalTime.removeSurrounding("\"","\""), formatter))
     task.arrivalTime = duration.toMinutes().toString()
     return task
 }
@@ -160,9 +160,9 @@ private fun calculateRemainingTime(taskList: List<Task>, logger: Logger): List<T
             calculateRemainingTime(task)
         }
     } catch (e: Exception) {
-        logger.error("Found error: $e")
+        logger.error("Error calculating remaining time: $e")
+        throw(e)
     }
-    logger.info("remaining times calculated: ${taskList.size}")
     return taskList
 }
 

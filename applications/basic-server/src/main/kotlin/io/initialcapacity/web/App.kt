@@ -75,7 +75,18 @@ private fun getAllTasks(logger: Logger): List<Task> =
         val busDataList: List<Task> = Json.decodeFromString(body)
         logger.info("Success! Fetched ${busDataList.size} task")
         return@runBlocking busDataList
+}
 
+private fun filterByLine(lineRef: String) {
+    return
+}
+
+private fun filterByStop(stopRef: String) {
+    return
+}
+
+private fun filterByDirection(directionRef: String) {
+    return
 }
 
 private fun PipelineContext<Unit, ApplicationCall>.headers(): MutableMap<String, String> {
