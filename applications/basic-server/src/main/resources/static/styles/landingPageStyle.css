@@ -18,8 +18,9 @@
 .dropdown-content-container {
     display: none;
 }
-.dropdown-title-content-banner {
+.dropdown-content-title-banner {
     display:flex;
+    justify-content: space-between;
 }
 .filter {
     display: inline-block;
@@ -35,16 +36,17 @@
     text-align: center;
 }
 .filter-line-label{
+    flex: 4;
+    cursor: pointer;
+    padding: 3px;
 }
 .filter-list {
+    align-items: center;
     list-style: none;
     list-style-position: outside;
+    margin: 0;
     max-height: 45vh;
     overflow: scroll;
-}
-.filter-list{
-    align-items: center;
-    margin: 0;
     padding: 0;
 }
 .filter-title{
@@ -55,6 +57,11 @@
 .source {
     margin-left: 15px;
     font-style: italic;
+}
+.submit-filter-button {
+    border-radius: 10px;
+    margin-right: 10px;
+    padding: 3px;
 }
 .title-header {
     padding: 10px;
@@ -71,8 +78,12 @@ body {
 h1 {
     padding-left: 10px;
 }
+input {
+    flex: none;
+}
 li {
-    padding-top: 5px;
+    display: flex;
+    flex-direction: row;
 }
 li:hover {
     background-color: #8c8c8c;

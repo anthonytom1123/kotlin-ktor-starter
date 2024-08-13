@@ -8,7 +8,7 @@
 <body onload="init()">
     <div class="title-header">
         <div class="title-banner">
-            <h1>Bus Data Table</h1>
+            <h1>When's the Bus?</h1>
         </div>
         <div class="source">
             powered by <a href="http://www.511.org/">511.org</a>
@@ -24,9 +24,9 @@
                 <div class="dropdown-content" id="linesDropdownContent">
                     <div class="dropdown-content-title-banner">
                         <p class="filter-title">Bus Lines</p>
-                        <button>Test</button>
-                        <hr>
+                        <button class="submit-filter-button" onclick="filterByLine()">Submit</button>
                     </div>
+                    <hr>
                     <ul class="filter-list" id="linesList">
                     </ul>
                 </div>
@@ -38,7 +38,10 @@
             </div>
             <div class="dropdown-content-container" id="stopsDropdownContentContainer">
                 <div class="dropdown-content" id="stopsDropdownContent">
-                    <p class="filter-title">Stops</p>
+                    <div class="dropdown-content-title-banner">
+                        <p class="filter-title">Stops</p>
+                        <button class="submit-filter-button" onclick="filterByStop()">Submit</button>
+                    </div>
                     <hr>
                     <ul class="filter-list" id="stopsList">
                     </ul>
@@ -57,14 +60,19 @@
                         <th>Arrival Time</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <#list busDataList as busData>
-                        <tr data-stop-ref="${busData.stopRef?c}" data-line-ref = "${busData.lineRef}" data-line-name="${busData.lineName}">
+                <tbody id="busDataTableBody">
+                    <#list busDataList?sort_by("stopName")?sort_by("lineRef") as busData>
+                        <tr data-stop-ref="${busData.stopRef?c}" data-line-ref="${busData.lineRef}" data-line-name="${busData.lineName}">
                             <td>${busData.lineRef} ${busData.lineName}</td>
                             <td>${busData.directionRef}</td>
                             <td>${busData.stopName}</td>
                             <td>${busData.occupancy}</td>
-                            <td>${busData.arrivalTime} min</td>
+                            <td>
+                                <#if busData.arrivalTime == "null">
+                                    Data Unavailable
+                                <#else> ${busData.arrivalTime} min
+                                </#if>
+                            </td>
                         </tr>
                     </#list>
                 </tbody>

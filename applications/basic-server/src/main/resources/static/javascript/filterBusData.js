@@ -1,42 +1,74 @@
-var completeDataList = [];
-var displayedDataList = [];
+var masterList = [];
+var displayList = [];
 
 function init() {
-	getDisplayedData(completeDataList);
-	displayedDataList = completeDataList;
-	buildDropdown("stopsList", "stopRef", "stopName");
-	buildDropdown("linesList", "lineRef", "lineRefName");
+	getDisplayedData(masterList);
+	displayList = masterList;
+	buildDropdown("stopsList", "stopRef", "stopName", masterList);
+	buildDropdown("linesList", "lineRef", "lineRefName", masterList);
 }
 
 
-function buildDropdown(id, taskRef, taskName) {
+function buildDropdown(id, taskRef, taskName, dataList) {
 	console.log("building " + id + " dropdown");
 	uniqueSet = new Set();
-	completeDataList.forEach(function(task) {
-		let filterItem = task[taskRef].toString() + "?!" + task[taskName];
+	dataList.forEach(function(task) {
+		let filterItem = task[taskRef] + "?!" + task[taskName];
 		uniqueSet.add(filterItem);
 	});
-	Array.from(uniqueSet).forEach(function(filterString) {
+	Array.from(uniqueSet).sort().forEach(function(filterString) {
 		let trimmedFilterString = filterString.split("?!");
-		populateFilterDropdown(id, parseInt(trimmedFilterString[0]), trimmedFilterString[1]);
+		populateFilterDropdown(id, trimmedFilterString[0], trimmedFilterString[1]);
 	});
+}
+
+function buildTable(dataList) {
+	console.log("building table");
+	let tbody = document.getElementById("busDataTableBody");
 }
 
 function clearFilter(id) {
-
+	return;
 }
 
 function filterByLine() {
-
+	console.log("filtering by line");
+	let liList = document.getElementById("linesList").children;
+	let checkboxList = [];
+	let filteredList = [];
+	//finding all the checked filters
+	for(const li of liList) {
+		let checkbox = li.querySelector("input[type='checkbox']");
+		if (!checkbox) {
+			console.error("filterBusData.filterByLine(): Cannot find checkbox");
+			throw new Error("filterBusData.filterByLine(): Cannot find checkbox");
+		}
+		if(checkbox.checked)
+		{
+			checkboxList.push(checkbox.value);
+			console.log(`checkbox value: ${checkbox.value}, checked: ${checkbox.checked}`);
+		}
+	}
+	checkboxList.forEach(data => console.log(`checkbox.value: ${data}`));
+	//filtering
+	for(let checkbox of checkboxList) {
+		filteredList = displayList.filter(data =>
+			// console.log("dataLineRef: " + data["lineRef"] + " checkbox: " + checkbox)
+			data["lineRef"] == checkbox
+		);
+	}
+	console.log(`filtered list length ${filteredList.length}`);
+	buildTable(filteredList);
 }
 
 function filterByStop() {
-
+	console.log("Filtering by stop.");
 }
 
 
-function getDisplayedData(list) {
-	console.log("building data list");
+function getDisplayedData() {
+	console.log("building displayed data list");
+	let dataList = []
 	let table = document.getElementById("busDataTable");
 
 	for (let i = 1; i < table.rows.length; i++) {
@@ -51,12 +83,12 @@ function getDisplayedData(list) {
 			"occupancy": row.cells[3].textContent,
 			"arrivalTime": row.cells[4].textContent
 		};
-		list.push(task);
+		dataList.push(task);
 	}
+	return dataList;
 }
 
 function populateFilterDropdown(containerId, value, text) {
-	console.log("building " + containerId +" value: " + value + " text: " + text);
 	let container = document.getElementById(containerId);
 	let li = document.createElement("li");
 	let label = document.createElement("label");
@@ -87,7 +119,7 @@ function toggleFilterDisplay(id) {
 		}
 		filters[i].style.display = "none";
 	}
-	if(container.style.display == "none") {
+	if(container.style.display == "none" || !container.style.display) {
 		container.style.display = "block";
 	}
 	else {
