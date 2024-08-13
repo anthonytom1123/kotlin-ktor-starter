@@ -239,6 +239,25 @@ class ApplicationTest {
             }
         }
 
+        val task = Task(
+            "256",
+            "Line 256",
+            99998,
+            "Test Stop 6",
+            "OB",
+            "full",
+            "2024-07-02T05:22:58Z"
+        )
+
+        val response1 = client.post("/tasks/single") {
+            header(
+                HttpHeaders.ContentType,
+                ContentType.Application.Json
+            )
+            setBody(task)
+        }
+        assertEquals(HttpStatusCode.NoContent, response1.status)
+
         val response = client.get("/tasks") {
             accept(ContentType.Application.Json)
         }
@@ -247,7 +266,7 @@ class ApplicationTest {
         assertEquals(HttpStatusCode.OK, response.status)
 
         val actualLineRef = results.map(Task::lineRef)
-        assertContains(actualLineRef, "252")
+        assertContains(actualLineRef, "256")
         client.close()
     }
 

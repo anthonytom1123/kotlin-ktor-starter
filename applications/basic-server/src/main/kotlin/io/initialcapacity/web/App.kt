@@ -77,18 +77,6 @@ private fun getAllTasks(logger: Logger): List<Task> =
         return@runBlocking busDataList
 }
 
-private fun filterByLine(lineRef: String) {
-    return
-}
-
-private fun filterByStop(stopRef: String) {
-    return
-}
-
-private fun filterByDirection(directionRef: String) {
-    return
-}
-
 private fun PipelineContext<Unit, ApplicationCall>.headers(): MutableMap<String, String> {
     val headers = mutableMapOf<String, String>()
     call.request.headers.entries().forEach { entry ->

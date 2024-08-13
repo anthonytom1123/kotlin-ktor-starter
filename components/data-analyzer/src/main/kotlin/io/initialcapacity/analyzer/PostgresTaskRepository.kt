@@ -26,14 +26,20 @@ class PostgresTaskRepository : TaskRepository {
     }
 
     override suspend fun addTask(task: Task): Unit = suspendTransaction {
-        TaskDAO.new {
-            lineRef = task.lineRef.removeSurrounding("\"","\"")
-            lineName = task.lineName.removeSurrounding("\"","\"")
-            stopRef = task.stopRef
-            stopName = task.stopName.removeSurrounding("\"","\"")
-            directionRef = task.directionRef.removeSurrounding("\"","\"")
-            occupancy = task.occupancy.removeSurrounding("\"","\"")
-            arrivalTime = task.arrivalTime.removeSurrounding("\"","\"")
+        try {
+            TaskDAO.new {
+                lineRef = task.lineRef.removeSurrounding("\"","\"")
+                lineName = task.lineName.removeSurrounding("\"","\"")
+                stopRef = task.stopRef
+                stopName = task.stopName.removeSurrounding("\"","\"")
+                directionRef = processDirection(task.directionRef.removeSurrounding("\"","\""))
+                occupancy = processOccupancy(task.occupancy.removeSurrounding("\"","\""))
+                arrivalTime = task.arrivalTime.removeSurrounding("\"","\"")
+            }
+        }
+        catch(e: Exception) {
+            println("$e")
+            throw(e)
         }
     }
 
@@ -49,5 +55,22 @@ class PostgresTaskRepository : TaskRepository {
 
     override suspend fun clearTasks(): Int = suspendTransaction {
         TaskTable.deleteAll()
+    }
+
+    private fun processOccupancy(occupancy: String): String {
+        return when(occupancy) {
+            "full" -> Occupancy.Full.description
+            "seatsAvailable" -> Occupancy.SeatsAvailable.description
+            "standingAvailable" -> Occupancy.StandingAvailable.description
+            else -> "Data Unavailable"
+        }
+    }
+
+    private fun processDirection(direction: String): String {
+        return when(direction) {
+            "IB" -> Direction.Inbound.toString()
+            "OB" -> Direction.Outbound.toString()
+            else -> "Data Unavailable"
+        }
     }
 }

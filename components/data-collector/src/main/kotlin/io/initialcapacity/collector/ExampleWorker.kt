@@ -34,7 +34,6 @@ class ExampleWorker(override val name: String = "data-collector") : Worker<Examp
     private fun collectData(): ByteArray =
         runBlocking {
             logger.info("starting data collection.")
-            // https://api.511.org/transit/StopMonitoring?api_key=ea43df0e-f500-4422-83a5-f00910b6b2d5&agency=SF
             val token: String = System.getenv("TransitToken")
             val response: HttpResponse = HttpClient(CIO) {
                 install(ContentEncoding) {
@@ -50,7 +49,7 @@ class ExampleWorker(override val name: String = "data-collector") : Worker<Examp
                         appendPathSegments("transit", "StopMonitoring")
                         parameters.append("api_key", token)
                         parameters.append("agency", "SF")
-                        parameters.append("stopcode", "15794")
+                        //parameters.append("stopcode", "15794")
                     }
                 }
             }

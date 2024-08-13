@@ -9,6 +9,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.util.reflect.*
+import org.jetbrains.exposed.sql.Except
 import org.slf4j.Logger
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -30,6 +31,7 @@ fun Application.configureSerialization(repository: TaskRepository) {
                 var tasks = repository.getAllTasks()
                 tasks = calculateRemainingTime(tasks, logger)
                 call.respond(tasks)
+                logger.info("get /tasks sent")
             }
 
             get("/byLineRef/{lineRef}") {
@@ -146,6 +148,10 @@ fun Application.configureSerialization(repository: TaskRepository) {
 }
 
 private fun calculateRemainingTime(task: Task): Task {
+    if(task.arrivalTime == "null") {
+        return task
+    }
+
     val formatter = DateTimeFormatter.ISO_DATE_TIME
     val currentTime = getCurrentTime()
     val duration = Duration.between(currentTime, LocalDateTime.parse(task.arrivalTime.removeSurrounding("\"","\""), formatter))
@@ -161,7 +167,7 @@ private fun calculateRemainingTime(taskList: List<Task>, logger: Logger): List<T
         }
     } catch (e: Exception) {
         logger.error("Error calculating remaining time: $e")
-        throw(e)
+        throw e
     }
     return taskList
 }
