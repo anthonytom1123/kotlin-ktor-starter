@@ -2,7 +2,7 @@ var masterList = [];
 var displayList = [];
 
 function init() {
-	getDisplayedData(masterList);
+	masterList = getDisplayedData();
 	displayList = masterList;
 	buildDropdown("stopsList", "stopRef", "stopName", masterList);
 	buildDropdown("linesList", "lineRef", "lineRefName", masterList);
@@ -10,7 +10,7 @@ function init() {
 
 
 function buildDropdown(id, taskRef, taskName, dataList) {
-	console.log("building " + id + " dropdown");
+	console.log("filterBusData.buildDropdown: building " + id + " dropdown");
 	uniqueSet = new Set();
 	dataList.forEach(function(task) {
 		let filterItem = task[taskRef] + "?!" + task[taskName];
@@ -23,48 +23,106 @@ function buildDropdown(id, taskRef, taskName, dataList) {
 }
 
 function buildTable(dataList) {
-	console.log("building table");
-	let tbody = document.getElementById("busDataTableBody");
+	console.log("filterBusData.buildTable: building table");
+	sortDataList(dataList);
+	let table = document.getElementById("busDataTable");
+	let tbody = table.getElementsByTagName('tbody')[0];
+	clearTable(table);
+	dataList.forEach(function(task) {
+		let row = tbody.insertRow(-1);
+		buildRow(row, task);
+	});
 }
 
-function clearFilter(id) {
-	return;
+function buildRow(row, task) {
+	Object.keys(task).forEach(function(key) {
+		switch (key) {
+			case "lineRef":
+				row.setAttribute("data-line-ref", task[key]);
+				break;
+			case "lineName":
+				row.setAttribute("data-line-name", task[key]);
+				break;
+			case "stopRef":
+				row.setAttribute("data-stop-ref", task[key]);
+				break;
+			default:
+				let cell = row.insertCell(-1);
+				cell.textContent = task[key];
+		}
+	});
+}
+
+function clearFilterDropdown(id) {
+	console.log(`filterBusData.clearFilterDropdown: clearing dropdown ${id}`);
+	let ul = document.getElementById(id);
+	if (!ul && ul.tagName != "UL") {
+		console.error(`filterBusData.clearFilterDropdown: element ID ${id} is not a <ul>!`);
+		throw(`filterBusData.clearFilterDropdown: element ID ${id} is not a <ul>!`)
+	}
+	ul.innerHTML = "";
+}
+
+function clearTable(table) {
+	console.log(`filterBusData.clearTable: clearing table ${table}`);
+	while(table.rows.length > 1) {
+		table.deleteRow(1); //delete the first row until empty
+	}
+}
+
+function filterList(checkboxList, key) {
+	let filteredList = [];
+	if(checkboxList.length < 1) {
+		filteredList = masterList;
+	} else {
+		for(let checkbox of checkboxList) {
+			let tempList = masterList.filter(data =>
+				data[key] == checkbox
+			);
+			filteredList.push(...tempList);
+		}
+	}
+	return filteredList;
 }
 
 function filterByLine() {
-	console.log("filtering by line");
+	console.log("filterBusData.filterByLine: filtering by line");
 	let liList = document.getElementById("linesList").children;
-	let checkboxList = [];
-	let filteredList = [];
-	//finding all the checked filters
+	let checkboxList = findAllCheckedFilters(liList);
+	let filteredList = filterList(checkboxList, "lineRef");
+
+	console.log(`filterBusData.filterByLine: filtered list length ${filteredList.length}`);
+	buildTable(filteredList);
+	displayList = filteredList;
+	clearFilterDropdown("stopsList");
+	buildDropdown("stopsList", "stopRef", "stopName", displayList);
+}
+
+function filterByStop() {
+	console.log("filterBusData.filterByStop: filtering by stop");
+	let liList = document.getElementById("stopsList").children;
+	let checkboxList = findAllCheckedFilters(liList);
+	let filteredList = filterList(checkboxList, "stopRef");
+
+	console.log(`filterBusData.filterByStop: filtered list length ${filteredList.length}`);
+	buildTable(filteredList);
+}
+
+function findAllCheckedFilters(liList) {
+	let checkboxList = []
 	for(const li of liList) {
 		let checkbox = li.querySelector("input[type='checkbox']");
 		if (!checkbox) {
-			console.error("filterBusData.filterByLine(): Cannot find checkbox");
-			throw new Error("filterBusData.filterByLine(): Cannot find checkbox");
+			console.error("filterBusData.findAllCheckedFilters(): Cannot find checkbox");
+			throw new Error("filterBusData.findAllCheckedFilters(): Cannot find checkbox");
 		}
 		if(checkbox.checked)
 		{
 			checkboxList.push(checkbox.value);
-			console.log(`checkbox value: ${checkbox.value}, checked: ${checkbox.checked}`);
 		}
 	}
-	checkboxList.forEach(data => console.log(`checkbox.value: ${data}`));
-	//filtering
-	for(let checkbox of checkboxList) {
-		filteredList = displayList.filter(data =>
-			// console.log("dataLineRef: " + data["lineRef"] + " checkbox: " + checkbox)
-			data["lineRef"] == checkbox
-		);
-	}
-	console.log(`filtered list length ${filteredList.length}`);
-	buildTable(filteredList);
+	return checkboxList;
 }
-
-function filterByStop() {
-	console.log("Filtering by stop.");
-}
-
 
 function getDisplayedData() {
 	console.log("building displayed data list");
@@ -104,6 +162,24 @@ function populateFilterDropdown(containerId, value, text) {
 	li.appendChild(checkbox);
 	li.appendChild(label);
 	container.appendChild(li);
+}
+
+function sortDataList(dataList) {
+	dataList.sort(function(taskA, taskB) {
+		if(taskA.lineRef < taskB.lineRef) {
+			return -1;
+		} else if (taskA.lineRef > taskB.lineRef) {
+			return 1;
+		} else {
+			if (taskA.stopRef < taskB.stopRef) {
+				return -1;
+			} else if (taskA.stopRef > taskB.stopRef) {
+				return 1;
+			} else {
+				return 0;
+			}
+		}
+	});
 }
 
 function toggleFilterDisplay(id) {

@@ -1,14 +1,14 @@
 <#import "BusDataCard.ftl" as card>
 <#macro LandingPage busDataList title="LandingPage">
 <head>
-    <title>When's the Bus?</title>
+    <title>Bus Arriving In</title>
     <link rel="stylesheet" type="text/css" href="/static/styles/landingPageStyle.css">
     <script src="/static/javascript/filterBusData.js" type="text/javascript"></script>
 </head>
 <body onload="init()">
     <div class="title-header">
         <div class="title-banner">
-            <h1>When's the Bus?</h1>
+            <h1>Bus Arriving In...</h1>
         </div>
         <div class="source">
             powered by <a href="http://www.511.org/">511.org</a>
@@ -60,7 +60,7 @@
                         <th>Arrival Time</th>
                     </tr>
                 </thead>
-                <tbody id="busDataTableBody">
+                <tbody>
                     <#list busDataList?sort_by("stopName")?sort_by("lineRef") as busData>
                         <tr data-stop-ref="${busData.stopRef?c}" data-line-ref="${busData.lineRef}" data-line-name="${busData.lineName}">
                             <td>${busData.lineRef} ${busData.lineName}</td>
