@@ -1,7 +1,12 @@
-var masterList = [];
-var displayList = [];
+let masterList = [];
+let displayList = [];
+let collectorUrl = "";
+let webUrl = "";
 
-function init() {
+function init(cUrl, wUrl) {
+	collectorUrl = cUrl;
+	webUrl = wUrl;
+	console.log(`init: ${collectorUrl}, ${webUrl}`);
 	masterList = getDisplayedData();
 	displayList = masterList;
 	buildDropdown("stopsList", "stopRef", "stopName", masterList);
@@ -109,7 +114,7 @@ function filterByStop() {
 }
 
 function findAllCheckedFilters(liList) {
-	let checkboxList = []
+	let checkboxList = [];
 	for(const li of liList) {
 		let checkbox = li.querySelector("input[type='checkbox']");
 		if (!checkbox) {
@@ -126,7 +131,7 @@ function findAllCheckedFilters(liList) {
 
 function getDisplayedData() {
 	console.log("building displayed data list");
-	let dataList = []
+	let dataList = [];
 	let table = document.getElementById("busDataTable");
 
 	for (let i = 1; i < table.rows.length; i++) {
@@ -155,13 +160,37 @@ function populateFilterDropdown(containerId, value, text) {
 	checkbox.value = value;
 	checkbox.name = text;
 	checkbox.id = value;
-	checkbox.onchange = ""
+	checkbox.onchange = "";
 	label.htmlFor = value;
 	label.appendChild(document.createTextNode(text));
 	label.classList.add("filter-line-label");
 	li.appendChild(checkbox);
 	li.appendChild(label);
 	container.appendChild(li);
+}
+
+function refresh() {
+	console.log(`filterBusData.refresh: refreshing`);
+	sendGet(collectorUrl);
+	reloadPage();
+}
+
+function reloadPage() {
+	window.location.reload(true);
+}
+
+function sendGet(url) {
+	console.log(`filterBusData.sendGet: Connecting to ${url}`);
+	fetch(url).then(response => {
+		if(!response.ok) {
+			throw new Error(`filterBusData.sendGet: Status ${response.status}`);
+		}
+		return response.text();
+	}).then(data => {
+		console.log(`filterBusData.sendGet: Data received - ${data}`);
+	}).catch(error => {
+		console.error(`filterBusData.sendGet: Error connected to ${url} - ${error}`);
+	});
 }
 
 function sortDataList(dataList) {

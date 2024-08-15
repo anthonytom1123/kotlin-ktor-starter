@@ -3,7 +3,6 @@
     justify-content: center;
     align-items: start;
     min-height: 100vh;
-    z-index: 0;
 }
 .dropdown-content {
     background-color: #5e5a66;
@@ -25,9 +24,15 @@
 .filter {
     display: inline-block;
 }
+.filter-banner {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    margin-left: 10vw;
+    margin-right: 10vw;
+}
 .filter-dropdown-button {
     align-items: center;
-    border-radius: 10px;
     justify-content: center;
     margin: 10px;
     padding: 5px;
@@ -70,10 +75,21 @@
 .title-banner {
     width: 100%;
 }
+#refreshButtonContainer {
+    margin-left: auto;
+}
+#refreshButton {
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+}
 body {
     background-color: #121212;
     color: whitesmoke;
     font-family: Arial, Helvetica, sans-serif;
+}
+button {
+    border-radius: 10px;
 }
 h1 {
     padding-left: 10px;

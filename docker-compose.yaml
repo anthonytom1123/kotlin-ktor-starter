@@ -24,6 +24,8 @@ services:
       PORT: 8888
       APP: /opt/applications/basic-server.jar
       ANALYZER_URL: http://data-analyzer:8887/tasks
+      COLLECTOR_URL: http://data-collector:8886/
+      WEB_URL: http://basic-server:8888/
     expose:
       - 8888
     networks:

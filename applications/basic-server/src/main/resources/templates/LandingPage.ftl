@@ -1,11 +1,11 @@
 <#import "BusDataCard.ftl" as card>
-<#macro LandingPage busDataList title="LandingPage">
+<#macro LandingPage busDataList collectorUrl webUrl title="LandingPage">
 <head>
     <title>Bus Arriving In</title>
     <link rel="stylesheet" type="text/css" href="/static/styles/landingPageStyle.css">
     <script src="/static/javascript/filterBusData.js" type="text/javascript"></script>
 </head>
-<body onload="init()">
+<body onload="init('${collectorUrl}', '${webUrl}')">
     <div class="title-header">
         <div class="title-banner">
             <h1>Bus Arriving In...</h1>
@@ -47,6 +47,11 @@
                     </ul>
                 </div>
             </div>
+        </div>
+        <div id="refreshButtonContainer">
+            <button id="refreshButton" onclick="refresh()">
+                Refresh
+            </button>
         </div>
     </div>
     <div class="bus-data-table">

@@ -20,6 +20,7 @@ import io.ktor.server.freemarker.FreeMarker
 import io.ktor.server.freemarker.FreeMarkerContent
 import io.ktor.server.http.content.staticResources
 import io.ktor.server.netty.Netty
+import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.Routing
 import io.ktor.server.routing.get
@@ -35,13 +36,28 @@ import kotlin.io.use
 
 fun Application.module() {
     val logger = LoggerFactory.getLogger(this.javaClass)
+    install(CORS){
+        anyHost()
+        allowMethod(HttpMethod.Put)
+        allowMethod(HttpMethod.Delete)
+        allowMethod(HttpMethod.Post)
+        allowHeader(HttpHeaders.ContentType)
+        allowHeader(HttpHeaders.AccessControlAllowOrigin)
+        allowHeader(HttpHeaders.Accept)
+    }
     install(FreeMarker) {
         templateLoader = ClassTemplateLoader(this::class.java.classLoader, "templates")
     }
     install(Routing) {
         get("/") {
             val busDataList = getAllTasks(logger)
-            call.respond(FreeMarkerContent("index.ftl", mapOf("busDataList" to busDataList)))
+            val webUrl = System.getenv("WEB_URL")
+            val collectorUrl = System.getenv("COLLECTOR_URL")
+            call.respond(FreeMarkerContent("index.ftl", mapOf(
+                "busDataList" to busDataList,
+                "collectorUrl" to collectorUrl,
+                "webUrl" to webUrl
+            )))
         }
         get("/test") {
             call.respondText("Success!")
