@@ -101,7 +101,6 @@ fun Application.configureSerialization(repository: TaskRepository) {
             post {
                 try {
                     logger.info("post/list received")
-                    logger.info("clearing table")
                     repository.clearTasks()
                     var taskList = call.receive<MutableList<Task>>()
                     taskList.forEach {
@@ -113,6 +112,7 @@ fun Application.configureSerialization(repository: TaskRepository) {
                 } catch (ex: JsonConvertException) {
                     call.respond(HttpStatusCode.BadRequest)
                 }
+                logger.info("post/list finished")
             }
 
             post("/single") {
@@ -147,7 +147,7 @@ fun Application.configureSerialization(repository: TaskRepository) {
     }
 }
 
-private fun calculateRemainingTime(task: Task): Task {
+private fun calculateRemainingTime(task: Task, logger: Logger): Task {
     if(task.arrivalTime == "null") {
         return task
     }
@@ -163,7 +163,7 @@ private fun calculateRemainingTime(taskList: List<Task>, logger: Logger): List<T
     try {
         logger.info("calculating remaining time")
         taskList.map { task ->
-            calculateRemainingTime(task)
+            calculateRemainingTime(task, logger)
         }
     } catch (e: Exception) {
         logger.error("Error calculating remaining time: $e")
@@ -173,6 +173,6 @@ private fun calculateRemainingTime(taskList: List<Task>, logger: Logger): List<T
 }
 
 private fun getCurrentTime(): LocalDateTime {
-    val zoneId = ZoneId.of("America/Los_Angeles")
+    val zoneId = ZoneId.of("UTC")
     return ZonedDateTime.now(zoneId).toLocalDateTime()
 }

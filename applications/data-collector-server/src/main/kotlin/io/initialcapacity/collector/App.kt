@@ -2,18 +2,19 @@ package io.initialcapacity.collector
 
 import io.initialcapacity.workflow.WorkScheduler
 import io.ktor.http.*
-import io.ktor.server.application.Application
-import io.ktor.server.application.call
-import io.ktor.server.application.install
+import io.ktor.server.application.*
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.Routing
 import io.ktor.server.routing.get
+import org.slf4j.LoggerFactory
 import java.util.*
 
 fun Application.module() {
+    val logger = LoggerFactory.getLogger(this.javaClass)
+    val scheduler = WorkScheduler<ExampleTask>(ExampleWorkFinder(), mutableListOf(ExampleWorker()), 300)
     install(CORS){
         anyHost()
         allowMethod(io.ktor.http.HttpMethod.Put)
@@ -29,9 +30,18 @@ fun Application.module() {
         }
 
         get("/refresh") {
-            val scheduler = WorkScheduler<ExampleTask>(ExampleWorkFinder(), mutableListOf(ExampleWorker()), 300)
-            scheduler.start()
+            logger.info("got refresh call")
+            scheduler.addWork()
             call.respond(HttpStatusCode.OK)
+        }
+        scheduler.start()
+    }
+
+    environment.monitor.subscribe(ApplicationStopping) {
+        try {
+            scheduler.shutdown()
+        } catch(e: Exception) {
+            logger.error("Error shutting down: $e")
         }
     }
 }

@@ -169,10 +169,15 @@ function populateFilterDropdown(containerId, value, text) {
 	container.appendChild(li);
 }
 
-function refresh() {
+async function refresh() {
 	console.log(`filterBusData.refresh: refreshing`);
-	sendGet(collectorUrl);
-	reloadPage();
+	try {
+		await sendGet(collectorUrl+'refresh');
+		await new Promise(r => setTimeout(r, 2000));
+		reloadPage();
+	} catch(e) {
+		console.error(`filterBusData.refresh: Issue during refresh - ${error}`);
+	}
 }
 
 function reloadPage() {

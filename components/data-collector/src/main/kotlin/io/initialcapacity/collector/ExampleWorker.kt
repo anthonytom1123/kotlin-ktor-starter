@@ -24,6 +24,16 @@ import javax.print.attribute.standard.Compression
 
 class ExampleWorker(override val name: String = "data-collector") : Worker<ExampleTask> {
     private val logger = LoggerFactory.getLogger(this.javaClass)
+    @Volatile
+    private var busy: Boolean = false;
+
+    override fun isBusy(): Boolean {
+        return busy
+    }
+
+    override fun setBusy(v: Boolean) {
+        busy = v
+    }
 
     override fun execute(task: ExampleTask) {
         val body: ByteArray = collectData()
@@ -56,10 +66,6 @@ class ExampleWorker(override val name: String = "data-collector") : Worker<Examp
             if (response.status.value in 200..299) {
                 logger.info("Successful response at ${response.request.url}")
             }
-
-//            response.headers.names().forEach { name ->
-//                logger.info("Header $name: ${response.headers.get(name)}")
-//            }
             return@runBlocking response.body()
         }
 

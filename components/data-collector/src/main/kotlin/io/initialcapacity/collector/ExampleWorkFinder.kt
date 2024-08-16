@@ -8,9 +8,7 @@ class ExampleWorkFinder : WorkFinder<ExampleTask> {
 
     override fun findRequested(name: String): List<ExampleTask> {
         logger.info("finding work.")
-
         val work = ExampleTask("info")
-
         return mutableListOf(work)
     }
 
