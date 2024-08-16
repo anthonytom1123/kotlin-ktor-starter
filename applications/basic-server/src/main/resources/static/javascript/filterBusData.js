@@ -172,8 +172,7 @@ function populateFilterDropdown(containerId, value, text) {
 async function refresh() {
 	console.log(`filterBusData.refresh: refreshing`);
 	try {
-		await sendGet(collectorUrl+'refresh');
-		await new Promise(r => setTimeout(r, 2000));
+		//await sendGet(collectorUrl+'refresh');
 		reloadPage();
 	} catch(e) {
 		console.error(`filterBusData.refresh: Issue during refresh - ${error}`);

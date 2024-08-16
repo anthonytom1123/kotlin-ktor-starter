@@ -1,7 +1,6 @@
 # Kotlin ktor starter
 
-An [application continuum](https://www.appcontinuum.io/) style example using Kotlin and Ktor
-that includes a single web application with two background workers.
+A web application using Kotlin and Ktor that includes a single web application, two background workers, and a postgres database. Data collector fetches data from [511.org](https://511.org/) and sends the data to Data Analyzer. Data Analyzer then parses through it and stores it in a postgres database. The web application calls Data Analyzer to read data from the database and then display the data to the user.
 
 * Basic web application
 * Data analyzer
@@ -26,10 +25,10 @@ The data is fetched from [511.org](https://511.org/).
     docker build -t kotlin-ktor-starter .
     ```
 
-1.  Run with docker.
+1.  Run with docker compose.
 
     ```bash
-    docker run -e PORT=8881 -p 8881:8881 kotlin-ktor-starter
+    docker-compose up --build
     ```
 
 That's a wrap for now.

@@ -14,7 +14,7 @@ import java.util.*
 
 fun Application.module() {
     val logger = LoggerFactory.getLogger(this.javaClass)
-    val scheduler = WorkScheduler<ExampleTask>(ExampleWorkFinder(), mutableListOf(ExampleWorker()), 300)
+    val scheduler = WorkScheduler<ExampleTask>(ExampleWorkFinder(), mutableListOf(ExampleWorker()), 65)
     install(CORS){
         anyHost()
         allowMethod(io.ktor.http.HttpMethod.Put)
