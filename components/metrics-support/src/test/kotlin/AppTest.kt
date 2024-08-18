@@ -49,7 +49,7 @@ class AppTest {
         val result = checkDatabaseStatus(mockDatabase)
         assertFalse(result)
     }
-    
+
     private fun testApp(block: suspend ApplicationTestBuilder.(client: HttpClient) -> Unit) {
         testApplication {
             application {
