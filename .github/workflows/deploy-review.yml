@@ -10,15 +10,16 @@ jobs:
       postgres:
         image: postgres:13
         env:
-          DB_URL: testdb
+          PG_DB: testdb
           DB_USER: postgres
           DB_PASSWORD: postgres
         ports:
           - 5432:5432
-    env:
-      DB_URL: testdb
-      DB_USER: postgres
-      DB_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -26,7 +27,16 @@ jobs:
           distribution: 'temurin'
           java-version: 21
           cache: 'gradle'
+      - name: "Init postgres"
+        env:
+          DB_PASSWORD: postgres
+        run: |
+          psql -h localhost -U postgres -d testdb -c "CREATE TABLE IF NOT EXISTS task(id SERIAL, "lineRef" VARCHAR(10) NOT NULL COLLATE pg_catalog."default", "lineName" VARCHAR(50) NOT NULL COLLATE pg_catalog."default", "stopRef" INTEGER NOT NULL, "stopName" VARCHAR (50) NOT NULL COLLATE pg_catalog."default", "directionRef" VARCHAR (10) COLLATE pg_catalog."default", "occupancy" VARCHAR (20) COLLATE pg_catalog."default", "arrivalTime" VARCHAR (30) COLLATE pg_catalog."default", CONSTRAINT task_pkey PRIMARY KEY (id,"lineRef","stopRef","directionRef","arrivalTime"));"
       - name: "build"
+        env:
+          DB_URL: localhost:5432
+          DB_USER: postgres
+          DB_PASSWORD: postgres
         run: ./gradlew build
       - uses: actions/upload-artifact@v4
         with:
