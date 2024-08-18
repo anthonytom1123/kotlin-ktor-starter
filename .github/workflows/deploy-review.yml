@@ -6,10 +6,15 @@ on:
 jobs:
   run-tests:
     runs-on: ubuntu-latest
-    env:
-      DB_URL: test
-      DB_USER: test
-      DB_PASSWORD: test
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          DB_URL: postgres
+          DB_USER: postgres
+          DB_PASSWORD: testdb
+        ports:
+          - 5432:5432
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
