@@ -61,7 +61,8 @@ class ApplicationTest {
             "seatsAvailable",
             "2024-07-02T05:21:58Z"
         )
-        val testPostResponse = client.post("/tasks/single") {
+
+        client.post("/tasks/single") {
             header(
                 HttpHeaders.ContentType,
                 ContentType.Application.Json

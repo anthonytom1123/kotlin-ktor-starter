@@ -10,11 +10,15 @@ jobs:
       postgres:
         image: postgres:13
         env:
-          DB_URL: postgres
+          DB_URL: testdb
           DB_USER: postgres
-          DB_PASSWORD: testdb
+          DB_PASSWORD: postgres
         ports:
           - 5432:5432
+    env:
+      DB_URL: testdb
+      DB_USER: postgres
+      DB_PASSWORD: postgres
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
