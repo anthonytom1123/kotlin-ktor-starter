@@ -58,4 +58,10 @@ class FakeTaskRepository: TaskRepository {
 
     }
 
+    override suspend fun addMultipleTasks(taskList: MutableList<Task>) {
+        taskList.forEach { task ->
+            tasks.add(task)
+        }
+    }
+
 }

@@ -1,30 +1,5 @@
 val ktorVersion: String by project
 
-plugins {
-//    id("com.google.protobuf")
-}
-
-//sourceSets {
-//    main {
-//        proto {
-//            srcDir("src/main/proto")
-//            include("**/*.protodevel")
-//        }
-//    }
-//    test {
-//        proto {
-//            // In addition to the default "src/test/proto"
-//            srcDir("src/test/protocolbuffers")
-//        }
-//    }
-//}
-
-//protobuf {
-//    protoc {
-//        artifact = "com.google.protobuf:protoc:3.0.0"
-//    }
-//}
-
 dependencies {
     implementation(project(":support:workflow-support"))
     implementation(project(":components:data-analyzer"))

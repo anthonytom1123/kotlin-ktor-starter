@@ -1,3 +1,4 @@
+
 val kotlin_version: String by project
 val logback_version: String by project
 val postgres_version: String by project
@@ -23,6 +24,7 @@ application {
 dependencies {
     implementation(project(":components:data-analyzer"))
     implementation(project(":support:workflow-support"))
+    implementation(project(":components:metrics-support"))
 
     implementation("io.ktor:ktor-server-core-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-freemarker-jvm:$ktorVersion")

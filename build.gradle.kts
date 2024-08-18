@@ -4,8 +4,14 @@ plugins {
     id("com.google.protobuf") version "0.9.4" apply false
 }
 
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+}
+
 subprojects {
-    if (listOf("applications", "components", "support").contains(name)) return@subprojects
+    if (listOf("applications", "components", "support", "integration").contains(name)) return@subprojects
 
     apply(plugin = "kotlin")
 

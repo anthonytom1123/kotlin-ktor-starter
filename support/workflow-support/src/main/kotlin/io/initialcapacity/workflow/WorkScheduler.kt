@@ -35,8 +35,12 @@ class WorkScheduler<T>(private val finder: WorkFinder<T>, private val workers: M
     }
 
     fun addWork() {
+        logger.info("adding work")
         workers.forEach { worker ->
-            checkForWork(worker).invoke()
+            if(!worker.isBusy()) {
+                logger.info("adding work for worker {}", worker.name)
+                checkForWork(worker).invoke()
+            }
         }
     }
 
@@ -49,9 +53,9 @@ class WorkScheduler<T>(private val finder: WorkFinder<T>, private val workers: M
     private fun checkForWork(worker: Worker<T>): () -> Unit {
         return {
             if(worker.isBusy()) {
-                logger.debug("worker {} is busy", worker.name)
+                logger.info("worker {} is busy", worker.name)
             } else {
-                logger.debug("checking for work for {}", worker.name)
+                logger.info("checking for work for {}", worker.name)
                 finder.findRequested(worker.name).forEach {
                     worker.setBusy(true)
                     logger.info("found work for {}", worker.name)

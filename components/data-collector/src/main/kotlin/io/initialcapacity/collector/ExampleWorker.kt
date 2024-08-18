@@ -36,12 +36,21 @@ class ExampleWorker(override val name: String = "data-collector") : Worker<Examp
     }
 
     override fun execute(task: ExampleTask) {
-        val body: ByteArray = collectData()
+        logger.info("Executing task")
+        val body: ByteArray = collectData(getUrl())
+        logger.info("Executing task1")
         val taskList = processBody(body)
         sendToAnalyser(taskList)
     }
 
-    private fun collectData(): ByteArray =
+    private fun getUrl(): String {
+        var url = "https://api.511.org/transit/StopMonitoring?"
+        url += System.getenv("TransitToken")
+        url += "&agency=SF"
+        return url
+    }
+
+    fun collectData(url: String): ByteArray =
         runBlocking {
             logger.info("starting data collection.")
             val token: String = System.getenv("TransitToken")
@@ -53,15 +62,7 @@ class ExampleWorker(override val name: String = "data-collector") : Worker<Examp
                     json()
                 }
             }.use { client ->
-                client.get("https://api.511.org") {
-                    url {
-                        //StopMonitoring or tripupdates
-                        appendPathSegments("transit", "StopMonitoring")
-                        parameters.append("api_key", token)
-                        parameters.append("agency", "SF")
-                        //parameters.append("stopcode", "15794")
-                    }
-                }
+                client.get(url) {}
             }
             if (response.status.value in 200..299) {
                 logger.info("Successful response at ${response.request.url}")
@@ -71,8 +72,10 @@ class ExampleWorker(override val name: String = "data-collector") : Worker<Examp
 
     private fun processBody(body: ByteArray): MutableList<Task> {
         //substring to remove BOM
+        logger.info("processing body")
         val obj = Json.parseToJsonElement(body.toString(Charsets.UTF_8).substring(1)).jsonObject
         val stopData = obj["ServiceDelivery"]?.jsonObject?.get("StopMonitoringDelivery")?.jsonObject?.get("MonitoredStopVisit")?.jsonArray
+        logger.info("Collector fetched ${stopData?.size} data points")
         val taskList: MutableList<Task> = mutableListOf()
         stopData?.forEach { stopVisit ->
             val stopJsonObj = stopVisit.jsonObject

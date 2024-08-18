@@ -102,17 +102,22 @@ fun Application.configureSerialization(repository: TaskRepository) {
                 try {
                     logger.info("post/list received")
                     repository.clearTasks()
-                    var taskList = call.receive<MutableList<Task>>()
-                    taskList.forEach {
-                        repository.addTask(it)
-                    }
+                    val taskList = call.receive<MutableList<Task>>()
+                    logger.info("received ${taskList.size} tasks")
+                    repository.addMultipleTasks(taskList)
                     call.respond(HttpStatusCode.NoContent)
-                } catch (ex: IllegalStateException) {
+                } catch (e: IllegalStateException) {
+                    logger.error("Illegal State Exception: ${e.message}")
                     call.respond(HttpStatusCode.BadRequest)
-                } catch (ex: JsonConvertException) {
+                } catch (e: JsonConvertException) {
+                    logger.error("JsonConvertException: ${e.message}")
                     call.respond(HttpStatusCode.BadRequest)
+                } catch (e: Exception) {
+                    logger.error("Unexpected error: ${e.message}")
+                    call.respond(HttpStatusCode.BadRequest)
+                } finally {
+                    logger.info("post/list finished")
                 }
-                logger.info("post/list finished")
             }
 
             post("/single") {

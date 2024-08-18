@@ -8,6 +8,13 @@ import kotlinx.coroutines.Dispatchers
 import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 
+data class TaskDAOPrimaryKey(
+    val lineRef: String,
+    val stopRef: Int,
+    val directionRef: String,
+    val arrivalTime: String
+)
+
 object TaskTable : IntIdTable("task") {
     val lineRef = varchar("lineRef", 10)
     val lineName = varchar("lineName", 50)
@@ -17,6 +24,10 @@ object TaskTable : IntIdTable("task") {
     //seatsAvailable, standingAvailable
     val occupancy = varchar("occupancy", 20)
     val arrivalTime = varchar("arrivalTime", 30)
+
+//    init {
+//        uniqueIndex(lineRef, stopRef, directionRef, arrivalTime)
+//    }
 }
 
 class TaskDAO(id: EntityID<Int>) : IntEntity(id) {
@@ -29,6 +40,8 @@ class TaskDAO(id: EntityID<Int>) : IntEntity(id) {
     var directionRef by TaskTable.directionRef
     var occupancy by TaskTable.occupancy
     var arrivalTime by TaskTable.arrivalTime
+
+//    val primaryKey: TaskDAOPrimaryKey get() = TaskDAOPrimaryKey(lineRef, stopRef, directionRef, arrivalTime)
 }
 
 suspend fun <T> suspendTransaction(block: Transaction.() -> T): T =

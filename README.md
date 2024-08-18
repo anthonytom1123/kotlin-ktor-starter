@@ -17,7 +17,7 @@ The data is fetched from [511.org](https://511.org/).
 
 ## Getting Started
 
-1. Open Docker.
+1. Open Docker. There should already be a .jar file in application/basic-server/build/libs, application/data-analyzer-server/build/libs, and application/data-collector-server/build/libs.
 
 1. Build with Docker.
 
@@ -31,4 +31,4 @@ The data is fetched from [511.org](https://511.org/).
     docker-compose up --build
     ```
 
-That's a wrap for now.
+You will be able to access the data through the kotlin-ktor-server at [http://localhost:8888/](http://localhost:8888/) once all the containers are running.

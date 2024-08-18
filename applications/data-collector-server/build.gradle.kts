@@ -5,6 +5,8 @@ plugins {
 group = "io.initialcapacity.collector"
 
 val ktorVersion: String by project
+val mockkVersion: String by project
+val ktorClientMockVersion: String by project
 
 dependencies {
     implementation(project(":components:data-collector"))
@@ -17,6 +19,10 @@ dependencies {
     implementation("io.ktor:ktor-server-cors:$ktorVersion")
 
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktorVersion")
+    testImplementation("org.jetbrains.kotlin:kotlin-test")
+    testImplementation("org.mockito:mockito-core:5.0.0")
+    testImplementation("io.mockk:mockk:${mockkVersion}")
+    testImplementation("io.ktor:ktor-client-mock:${ktorClientMockVersion}")
 }
 
 task<JavaExec>("start") {

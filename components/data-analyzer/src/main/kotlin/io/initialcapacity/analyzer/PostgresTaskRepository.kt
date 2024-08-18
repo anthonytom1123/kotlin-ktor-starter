@@ -3,8 +3,10 @@ package io.initialcapacity.analyzer
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.deleteAll
+import org.slf4j.LoggerFactory
 
 class PostgresTaskRepository : TaskRepository {
+    val logger = LoggerFactory.getLogger(this.javaClass)
     override suspend fun getAllTasks(): List<Task> = suspendTransaction {
         TaskDAO.all().map(::daoToModel)
     }
@@ -27,6 +29,7 @@ class PostgresTaskRepository : TaskRepository {
 
     override suspend fun addTask(task: Task): Unit = suspendTransaction {
         try {
+            logger.info("adding task")
             TaskDAO.new {
                 lineRef = task.lineRef.removeSurrounding("\"","\"")
                 lineName = task.lineName.removeSurrounding("\"","\"")
@@ -36,11 +39,33 @@ class PostgresTaskRepository : TaskRepository {
                 occupancy = processOccupancy(task.occupancy.removeSurrounding("\"","\""))
                 arrivalTime = task.arrivalTime.removeSurrounding("\"","\"")
             }
+            logger.info("finished adding task")
         }
         catch(e: Exception) {
-            println("$e")
+            logger.error("$e")
             throw(e)
         }
+    }
+
+    override suspend fun addMultipleTasks(taskList: MutableList<Task>): Unit = suspendTransaction {
+        logger.info("adding ${taskList.size} tasks")
+        logger.info("connected to ${System.getenv("DB_URL")}")
+        taskList.forEach { task ->
+            try {
+                TaskDAO.new {
+                    lineRef = task.lineRef.removeSurrounding("\"", "\"")
+                    lineName = task.lineName.removeSurrounding("\"", "\"")
+                    stopRef = task.stopRef
+                    stopName = task.stopName.removeSurrounding("\"", "\"")
+                    directionRef = processDirection(task.directionRef.removeSurrounding("\"", "\""))
+                    occupancy = processOccupancy(task.occupancy.removeSurrounding("\"", "\""))
+                    arrivalTime = task.arrivalTime.removeSurrounding("\"", "\"")
+                }
+            } catch(e: Exception) {
+                logger.error("$e")
+            }
+        }
+        logger.info("finished adding multiple tasks")
     }
 
     override suspend fun removeTask(lineRef: String, stopRef: Int, directionRef: String, arrivalTime: String): Boolean = suspendTransaction {
@@ -54,6 +79,7 @@ class PostgresTaskRepository : TaskRepository {
     }
 
     override suspend fun clearTasks(): Int = suspendTransaction {
+        logger.info("finished clearing tasks")
         TaskTable.deleteAll()
     }
 
@@ -62,7 +88,7 @@ class PostgresTaskRepository : TaskRepository {
             "full" -> Occupancy.Full.description
             "seatsAvailable" -> Occupancy.SeatsAvailable.description
             "standingAvailable" -> Occupancy.StandingAvailable.description
-            else -> "Data Unavailable"
+            else -> "N/A"
         }
     }
 
@@ -70,7 +96,7 @@ class PostgresTaskRepository : TaskRepository {
         return when(direction) {
             "IB" -> Direction.Inbound.toString()
             "OB" -> Direction.Outbound.toString()
-            else -> "Data Unavailable"
+            else -> "N/A"
         }
     }
 }

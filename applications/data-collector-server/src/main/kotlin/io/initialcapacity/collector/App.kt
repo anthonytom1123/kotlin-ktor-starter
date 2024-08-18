@@ -12,21 +12,22 @@ import io.ktor.server.routing.get
 import org.slf4j.LoggerFactory
 import java.util.*
 
-fun Application.module() {
+fun Application.collectorModule(scheduler: WorkScheduler<ExampleTask>) {
     val logger = LoggerFactory.getLogger(this.javaClass)
-    val scheduler = WorkScheduler<ExampleTask>(ExampleWorkFinder(), mutableListOf(ExampleWorker()), 65)
-    install(CORS){
-        anyHost()
-        allowMethod(io.ktor.http.HttpMethod.Put)
-        allowMethod(io.ktor.http.HttpMethod.Delete)
-        allowMethod(io.ktor.http.HttpMethod.Post)
-        allowHeader(io.ktor.http.HttpHeaders.ContentType)
-        allowHeader(io.ktor.http.HttpHeaders.AccessControlAllowOrigin)
-        allowHeader(io.ktor.http.HttpHeaders.Accept)
+    if(pluginOrNull(CORS) == null) {
+        install(CORS) {
+            anyHost()
+            allowMethod(HttpMethod.Put)
+            allowMethod(HttpMethod.Delete)
+            allowMethod(HttpMethod.Post)
+            allowHeader(HttpHeaders.ContentType)
+            allowHeader(HttpHeaders.AccessControlAllowOrigin)
+            allowHeader(HttpHeaders.Accept)
+        }
     }
     install(Routing) {
         get("/") {
-            call.respondText("hi!", ContentType.Text.Html)
+            call.respondText("working")
         }
 
         get("/refresh") {
@@ -49,5 +50,5 @@ fun Application.module() {
 fun main() {
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
     val port = System.getenv("PORT")?.toInt() ?: 8886
-    embeddedServer(Netty, port = port, host = "0.0.0.0", module = { module() }).start(wait = true)
+    embeddedServer(Netty, port = port, host = "0.0.0.0", module = { collectorModule(WorkScheduler<ExampleTask>(ExampleWorkFinder(), mutableListOf(ExampleWorker()), 65)) }).start(wait = true)
 }
