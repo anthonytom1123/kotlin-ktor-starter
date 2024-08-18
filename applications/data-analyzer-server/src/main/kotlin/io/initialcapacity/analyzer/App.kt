@@ -8,7 +8,7 @@ import io.ktor.server.netty.Netty
 import io.ktor.server.plugins.cors.routing.*
 import java.util.*
 
-fun Application.analyserModule(repository: TaskRepository = PostgresTaskRepository()) {
+fun Application.analyserModule(repository: TaskRepository = PostgresTaskRepository(), runConfigDb: Boolean = true) {
     if(pluginOrNull(CORS) == null) {
         install(CORS) {
             anyHost()
@@ -21,7 +21,9 @@ fun Application.analyserModule(repository: TaskRepository = PostgresTaskReposito
         }
     }
     configureSerialization(repository)
-    configureDatabases()
+    if (runConfigDb) {
+        configureDatabases()
+    }
     healthCheckModule(repository)
     configureRouting()
 }

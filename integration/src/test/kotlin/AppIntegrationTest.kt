@@ -59,7 +59,7 @@ class AppIntegrationTest {
         application {
             val mockScheduler = WorkScheduler<ExampleTask>(io.initialcapacity.collector.ExampleWorkFinder(), mutableListOf(worker), 65)
             collectorModule(mockScheduler)
-            analyserModule(mockRepository)
+            analyserModule(mockRepository, false)
         }
 
         val client = createClient {
