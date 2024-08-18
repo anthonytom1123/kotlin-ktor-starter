@@ -16,6 +16,7 @@ import metrics.healthcheck.checkDatabaseStatus
 import metrics.healthcheck.healthCheckModule
 import kotlin.test.*
 
+//test
 class AppTest {
     private val mockDatabase = mockk<TaskRepository>()
 
