@@ -10,7 +10,7 @@ allprojects {
     }
 
     task("stage"){
-        dependsOn("build")
+        dependsOn("start")
     }
 }
 
