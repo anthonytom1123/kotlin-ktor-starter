@@ -38,13 +38,12 @@ class ExampleWorker(override val name: String = "data-collector") : Worker<Examp
     override fun execute(task: ExampleTask) {
         logger.info("Executing task")
         val body: ByteArray = collectData(getUrl())
-        logger.info("Executing task1")
         val taskList = processBody(body)
         sendToAnalyser(taskList)
     }
 
     private fun getUrl(): String {
-        var url = "https://api.511.org/transit/StopMonitoring?"
+        var url = "https://api.511.org/transit/StopMonitoring?api_key="
         url += System.getenv("TransitToken")
         url += "&agency=SF"
         return url
@@ -53,7 +52,6 @@ class ExampleWorker(override val name: String = "data-collector") : Worker<Examp
     fun collectData(url: String): ByteArray =
         runBlocking {
             logger.info("starting data collection.")
-            val token: String = System.getenv("TransitToken")
             val response: HttpResponse = HttpClient(CIO) {
                 install(ContentEncoding) {
                     gzip(0.9F)
