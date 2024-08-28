@@ -1,3 +1,3 @@
-web: ./gradlew build a:b:start
-worker1: ./gradlew build a:data-c:start
-worker2: ./gradlew build a:data-a:start
+web: ./gradlew build a:b:stage
+worker1: ./gradlew build a:data-c:stage
+worker2: ./gradlew build a:data-a:stage
