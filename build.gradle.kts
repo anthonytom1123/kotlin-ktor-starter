@@ -27,6 +27,6 @@ subprojects {
     }
 
     tasks.register("stage") {
-        dependsOn("clean", "build", "start")
+        dependsOn("clean", "build")
     }
 }
