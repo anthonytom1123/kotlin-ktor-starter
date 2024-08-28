@@ -17,6 +17,8 @@ CREATE TABLE IF NOT EXISTS task
     CONSTRAINT task_pkey PRIMARY KEY (id,"lineRef","stopRef","directionRef","arrivalTime")
 );
 
+create role bus with login password 'bus';
+
 ALTER TABLE IF EXISTS task
     OWNER to bus;
 
