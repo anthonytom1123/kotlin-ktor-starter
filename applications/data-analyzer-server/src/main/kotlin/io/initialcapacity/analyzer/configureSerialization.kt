@@ -168,7 +168,7 @@ private fun calculateRemainingTime(taskList: List<Task>, logger: Logger): List<T
     try {
         logger.info("calculating remaining time")
         taskList.map { task ->
-            calculateRemainingTime(task, logger)
+            calculateRemainingTime(task)
         }
     } catch (e: Exception) {
         logger.error("Error calculating remaining time: $e")
