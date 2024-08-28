@@ -152,7 +152,7 @@ fun Application.configureSerialization(repository: TaskRepository) {
     }
 }
 
-private fun calculateRemainingTime(task: Task, logger: Logger): Task {
+private fun calculateRemainingTime(task: Task): Task {
     if(task.arrivalTime == "null") {
         return task
     }
