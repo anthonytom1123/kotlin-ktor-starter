@@ -38,7 +38,7 @@ services:
     environment:
       PORT: 8887
       APP: /opt/applications/data-analyzer-server.jar
-      DB_URL: jdbc:postgresql://postgres:5432/busdb
+      DATABASE_URL: jdbc:postgresql://postgres:5432/busdb
       DB_USER: bus
       DB_PASSWORD: bus
     expose:

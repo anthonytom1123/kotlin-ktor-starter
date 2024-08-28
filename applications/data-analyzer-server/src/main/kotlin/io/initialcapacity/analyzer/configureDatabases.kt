@@ -12,7 +12,7 @@ import org.jetbrains.exposed.sql.*
 
 fun Application.configureDatabases() {
     Database.connect(
-        System.getenv("DB_URL")?: throw IllegalStateException("DB_URL environment not set."),
+        System.getenv("DATABASE_URL")?: throw IllegalStateException("DB_URL environment not set."),
         user = System.getenv("DB_USER")?: throw IllegalStateException("DB_USER environment not set."),
         password = System.getenv("DB_PASSWORD")?: throw IllegalStateException("DB_PASSWORD environment not set."),
     )
