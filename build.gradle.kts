@@ -25,4 +25,8 @@ subprojects {
 
         testImplementation(kotlin("test-junit"))
     }
+
+    tasks.register("stage") {
+        dependsOn("clean", "build", "start")
+    }
 }
