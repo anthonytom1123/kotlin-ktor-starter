@@ -8,10 +8,6 @@ allprojects {
     repositories {
         mavenCentral()
     }
-
-    task("stage"){
-        dependsOn("start")
-    }
 }
 
 subprojects {
