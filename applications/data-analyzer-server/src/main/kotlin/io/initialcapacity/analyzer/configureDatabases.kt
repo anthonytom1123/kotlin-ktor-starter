@@ -10,16 +10,15 @@ import java.sql.*
 import kotlinx.coroutines.*
 import org.jetbrains.exposed.sql.*
 import org.slf4j.LoggerFactory
+import java.net.URI
 
 fun Application.configureDatabases() {
     val logger = LoggerFactory.getLogger(this.javaClass)
     val dbUrl = System.getenv("DB_URL")?: throw IllegalAccessException("DB_URL environment not set.")
-    val user= System.getenv("DB_USER")?: throw IllegalArgumentException("DB_USER environment not set.")
-    val password = System.getenv("DB_PASSWORD")?: throw IllegalStateException("DB_PASSWORD environment not set.")
-    logger.info("dbUrl: $dbUrl, user: $user, pass: $password")
+    val dbUri = URI(dbUrl)
+    val jdbcUrl = "jdbc:postgresql://${dbUri.host}:${dbUri.port}${dbUri.path}?user=${dbUri.userInfo.split(":")[0]}&password=${dbUri.userInfo.split(":")[1]}"
     Database.connect(
-        url = dbUrl,
-        user = user,
-        password = password,
+        url = jdbcUrl,
+        driver = "org.postgresql.Driver",
     )
 }
